@@ -1,0 +1,24 @@
+use base.io
+
+charToDigit c = toNat c - toNat ?0
+fst p = match p with (x,y) -> x
+
+equalPair : (a,a) -> Boolean
+equalPair p = match p with (x,y) -> x == y
+
+-- > List.foldl (Int.+) +0 (map (charToDigit . fst) (filter equalPair (List.zip list ((drop 1 list) ++ (take 1 list)))))
+-- > List.foldl (Int.+) +0 (map (charToDigit . fst) (filter equalPair (List.zip list ((drop half list) ++ (take half list)))))
+
+
+solve : Text -> ([Char] ->{} [(Char,Char)]) -> ()
+solve name func =
+  f = openFile (FilePath name) Mode.Read
+  input = getLine f |> toCharList
+  result = List.foldl (Int.+) +0 (map (charToDigit . fst) (filter equalPair (func input)))
+  result |> toText |> printLine
+
+rotateLeft : Nat ->{} [a] ->{} [a]
+rotateLeft n list = (drop n list) ++ (take n list)
+
+main1 = '(solve "day01.txt" (list -> (List.zip list (rotateLeft 1 list))))
+main2 = '(solve "day01.txt" (list -> List.zip list (rotateLeft (List.size list / 2) list)))

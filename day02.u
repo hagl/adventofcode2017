@@ -1,0 +1,30 @@
+use base.io
+
+solve : Text -> ([Int] -> Int) -> ()
+solve name func =
+  f = openFile (FilePath name) Mode.Read
+  lines = readFile f
+  s = map ((split ?\t) `andThen` (map (fromText `andThen` (orDefault +0)) `andThen` func)) lines
+  printLine (List.foldl (+) +0 s |> toText)
+
+diffMinMax : [Int] -> Int
+diffMinMax list =
+  min = minimum list
+  max = maximum list
+  (orDefault +0 max) - (orDefault +0 min)
+
+findDivisor : [Int] -> Int
+findDivisor list =
+  go = list -> match list with
+    [] -> +0
+    (h +: t) -> match filter (n -> n `mod` h == +0) t with
+      [] -> go t
+      n +: _ -> n / h
+  go (sort list)
+
+readFile : Handle -> [Text]
+readFile h = if isFileEOF h then [] else (getLine h) +: (readFile h)
+
+main1 = '(solve "day02.txt" diffMinMax)
+main2 = '(solve "day02.txt" findDivisor)
+
